@@ -38,11 +38,18 @@ ggrachDevMap.prototype.initMap = function () {
                 searchControlProvider: 'yandex#search'
             });
 
+            var myGeoObjects = [];
+
             this.arPoints.forEach(function (element) {
-                var myPlacemarkWithContent = new ymaps.Placemark(element.COORDINATES, {
-                    hintContent: element.NAME,
-                    balloonContent: element.NAME + '<br>' + element.PREVIEW_TEXT + '<br>' + '<a target="_blank" href="' + element.DETAIL_PAGE_URL + '">Перейти</a>'
+                var myPlacemarkWithContent = new ymaps.GeoObject({
+                    geometry: {type: "Point", coordinates: element.COORDINATES},
+                    properties: {
+                        clusterCaption: element.NAME,
+                        hintContent: element.NAME,
+                        balloonContent: element.NAME + '<br>' + element.PREVIEW_TEXT + '<br>' + '<a target="_blank" href="' + element.DETAIL_PAGE_URL + '">Перейти</a>'
+                    }
                 });
+                myGeoObjects.push(myPlacemarkWithContent);
                 myMap.geoObjects.add(myPlacemarkWithContent);
             });
 
@@ -50,6 +57,11 @@ ggrachDevMap.prototype.initMap = function () {
             {
                 myMap.setBounds(myMap.geoObjects.getBounds(), {checkZoomRange: true, zoomMargin: 9});
             }
+
+
+            var clusterer = new ymaps.Clusterer({clusterDisableClickZoom: true});
+            clusterer.add(myGeoObjects);
+            myMap.geoObjects.add(clusterer);
 
         }
     }
